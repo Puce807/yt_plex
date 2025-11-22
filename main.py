@@ -10,11 +10,16 @@ if __name__ == '__main__':
     if "youtube.com" in user_input: # URL
         print(f"You selected: {user_input} (URL)")
         URL = user_input
+    else: # Search
+        URL = f"ytsearch1:{user_input}"
+        print(f"You selected: {user_input} (SEARCH)")
+        print(f"URL: {URL}")
     user_input = input("Include video? [y/n] ").lower()
     include_video = True if user_input == "y" else False
 
     if os.path.exists("output.mp4"): os.remove("output.mp4")
     if os.path.exists("video.mp4"): os.remove("video.mp4")
+    if os.path.exists("video.webm"): os.remove("video.webm")
     if os.path.exists("audio.mp3"): os.remove("audio.mp3")
 
     if include_video:
@@ -64,9 +69,20 @@ if __name__ == '__main__':
                 f"output.{video_file_type}"
             ]
 
-            subprocess.run(cmd, check=True)
+            try: subprocess.run(cmd, check=True)
+            except subprocess.CalledProcessError:
+                cmd = [
+                    "ffmpeg",
+                    "-i", "video.webm",
+                    "-i", "audio.mp3",
+                    "-c:v", "copy",
+                    "-c:a", "aac",
+                    f"output.{video_file_type}"
+                ]
+                subprocess.run(cmd, check=True)
             os.remove("video.mp4")
             os.remove("audio.mp3")
+            print("Video and audio merged successfully")
 
     else:
         # Audio-only mode
