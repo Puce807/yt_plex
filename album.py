@@ -183,11 +183,11 @@ if __name__ == "__main__":
                 print("ERROR: audio.mp3 was not created")
 
             try:
-                set_meta(final_name, "title", safe_title)
-                set_meta(final_name, "artist", artist)
-                set_meta(final_name, "album", album)
-                set_meta(final_name, "albumartist", artist)
-                set_meta(final_name, "tracknumber", str(entry_num))
+                set_meta(final_path, "title", safe_title)
+                set_meta(final_path, "artist", artist)
+                set_meta(final_path, "album", album)
+                set_meta(final_path, "albumartist", artist)
+                set_meta(final_path, "tracknumber", str(entry_num))
             except (FileNotFoundError, ValueError):
                 print("Metadata unsuccessful")
 
