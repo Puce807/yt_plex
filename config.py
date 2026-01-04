@@ -9,3 +9,5 @@ video_file_type = "mp4" # mp4, webm
 separate_audio = False # False = 1 file, True = 1 video and 1 audio
 
 output_template = "%(title)s.%(ext)s"  # Output filename template
+
+categorise_output = True # Ask user for album and artist, clean title ready for plex
