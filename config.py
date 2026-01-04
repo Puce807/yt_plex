@@ -11,3 +11,5 @@ separate_audio = False # False = 1 file, True = 1 video and 1 audio
 output_template = "%(title)s.%(ext)s"  # Output filename template
 
 categorise_output = True # Ask user for album and artist, clean title ready for plex
+
+OUTPUT_DESTINATION = "" # Leave as "" for saving to working directory

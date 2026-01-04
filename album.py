@@ -111,8 +111,20 @@ if __name__ == "__main__":
         video_entries = playlist_info["entries"]
 
     else:
-        print("THIS FILE IS PLAYLIST ONLY")
-        raise ValueError
+        #print("THIS FILE IS PLAYLIST ONLY")
+        #raise ValueError
+        if "youtube.com" in user_input or "youtu.be" in user_input:
+            URL = user_input
+            print(f"You selected: {user_input} (URL)")
+        else:
+            URL = f"ytsearch1:{user_input}"
+            print(f"You selected: {user_input} (SEARCH)")
+            print(f"URL: {URL}")
+
+        with yt_dlp.YoutubeDL({"quiet": True}) as ydl:
+            info = ydl.extract_info(URL, download=False)
+
+        video_entries = [{"url": URL, "title": info["title"]}]
 
     include_video = input("Include video? [y/n] ").lower() == "y"
     album = input("Enter album name: ")
@@ -136,6 +148,10 @@ if __name__ == "__main__":
         print(f"\n--- Processing: {title} {entry_num}/{total_entries }---")
         clean_files()
 
+        local_folder = os.path.join(artist, album)
+        album_folder = os.path.join(OUTPUT_DESTINATION, local_folder)
+        os.makedirs(album_folder, exist_ok=True)
+
         if include_video:
             print("Downloading video...")
             with yt_dlp.YoutubeDL(video_opts()) as ydl:
@@ -148,6 +164,7 @@ if __name__ == "__main__":
             if not separate_audio:
                 merge_audio()
                 final_name = f"{safe_title}.{video_file_type}"
+                final_path = os.path.join(album_folder, final_name)
                 os.rename(f"output.{video_file_type}", final_name)
                 print(f"Saved as: {final_name}")
 
@@ -157,17 +174,22 @@ if __name__ == "__main__":
                 ydl.extract_info(URL, download=True)
 
             final_name = f"{safe_title}.mp3"
+            final_path = os.path.join(album_folder, final_name)
+
             if os.path.exists("audio.mp3"):
-                os.rename("audio.mp3", final_name)
-                print(f"Saved as: {final_name}")
+                os.rename("audio.mp3", final_path)
+                print(f"Saved as: {final_path}")
             else:
                 print("ERROR: audio.mp3 was not created")
 
-            set_meta(final_name, "title", safe_title)
-            set_meta(final_name, "artist", artist)
-            set_meta(final_name, "album", album)
-            set_meta(final_name, "albumartist", artist)
-            set_meta(final_name, "tracknumber", str(entry_num))
+            try:
+                set_meta(final_name, "title", safe_title)
+                set_meta(final_name, "artist", artist)
+                set_meta(final_name, "album", album)
+                set_meta(final_name, "albumartist", artist)
+                set_meta(final_name, "tracknumber", str(entry_num))
+            except FileNotFoundError, ValueError:
+                print("Metadata unsuccessful")
 
     clean_files()
     print("--- Finished Processing ---")
