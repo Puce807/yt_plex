@@ -188,7 +188,7 @@ if __name__ == "__main__":
                 set_meta(final_name, "album", album)
                 set_meta(final_name, "albumartist", artist)
                 set_meta(final_name, "tracknumber", str(entry_num))
-            except FileNotFoundError, ValueError:
+            except (FileNotFoundError, ValueError):
                 print("Metadata unsuccessful")
 
     clean_files()
