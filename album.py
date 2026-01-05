@@ -9,10 +9,17 @@ import os
 import yt_dlp
 
 
-def read(filePath):
-    with open(filePath, "r") as file:
+def read(filepath):
+    with open(filepath, "r") as file:
         return json.load(file)
 
+def write(filepath, to_write):
+    with open(filepath, "w") as file:
+        if "json" in filepath:
+            json_string = json.dumps(to_write, indent=4)
+            file.write(json_string)
+        else:
+            file.write(to_write)
 
 def clean_files():
     for f in ("output.mp4", "video.mp4", "video.webm", "audio.mp3"):
@@ -98,6 +105,12 @@ def set_meta(filename, meta, value):
     print(f"Metadata successfully updated for {filename}: {meta} >>> {value}")
 
 if __name__ == "__main__":
+    if os.path.isfile("data.json"):
+        data = read("data.json")
+    else:
+        write("data.json", {})
+        data = {}
+
     user_input = input("Enter playlist URL: ")
 
     is_playlist = ("youtube" in user_input and "playlist" in user_input)
@@ -127,8 +140,16 @@ if __name__ == "__main__":
         video_entries = [{"url": URL, "title": info["title"]}]
 
     include_video = input("Include video? [y/n] ").lower() == "y"
+    artist = ""
     album = input("Enter album name: ")
-    artist = input(f"Enter artist for {album}: ")
+    for D_artist, D_album in data.items():
+        if D_album == album:
+            answer = input(f"Is {album}'s artist {D_artist}? [y/n] ")
+            if answer == "y":
+                artist = album
+
+    if artist == "":
+        artist = input(f"Enter artist for {album}: ")
     print(f"Album: {album} Artist: {artist}")
     answer = input("Would you like to proceed? [y/n] ").lower()
     if answer == "n" or answer == "no":
